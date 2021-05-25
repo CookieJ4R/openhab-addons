@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.oktoprint.internal;
+package org.openhab.binding.octoprint.internal;
 
-import static org.openhab.binding.oktoprint.internal.OktoPrintBindingConstants.*;
+import static org.openhab.binding.octoprint.internal.OctoPrintBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,19 +26,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OktoPrintHandler} is responsible for handling commands, which are
+ * The {@link OctoPrintHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 @NonNullByDefault
-public class OktoPrintHandler extends BaseThingHandler {
+public class OctoPrintHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(OktoPrintHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OctoPrintHandler.class);
 
-    private @Nullable OktoPrintConfiguration config;
+    private @Nullable OctoPrintConfiguration config;
 
-    public OktoPrintHandler(Thing thing) {
+    public OctoPrintHandler(Thing thing) {
         super(thing);
     }
 
@@ -60,7 +60,7 @@ public class OktoPrintHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(OktoPrintConfiguration.class);
+        config = getConfigAs(OctoPrintConfiguration.class);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing

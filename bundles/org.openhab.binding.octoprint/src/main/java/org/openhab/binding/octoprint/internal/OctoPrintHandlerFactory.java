@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.oktoprint.internal;
+package org.openhab.binding.octoprint.internal;
 
-import static org.openhab.binding.oktoprint.internal.OktoPrintBindingConstants.*;
+import static org.openhab.binding.octoprint.internal.OctoPrintBindingConstants.*;
 
 import java.util.Set;
 
@@ -26,14 +26,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link OktoPrintHandlerFactory} is responsible for creating things and thing
+ * The {@link OctoPrintHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.oktoprint", service = ThingHandlerFactory.class)
-public class OktoPrintHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.octoprint", service = ThingHandlerFactory.class)
+public class OctoPrintHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
 
@@ -47,7 +47,7 @@ public class OktoPrintHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new OktoPrintHandler(thing);
+            return new OctoPrintHandler(thing);
         }
 
         return null;

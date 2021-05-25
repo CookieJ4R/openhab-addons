@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.oktoprint.internal;
+package org.openhab.binding.octoprint.internal;
 
 /**
- * The {@link OktoPrintConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link OctoPrintConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
-public class OktoPrintConfiguration {
+public class OctoPrintConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.

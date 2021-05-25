@@ -10,21 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.oktoprint.internal;
+package org.openhab.binding.octoprint.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link OktoPrintBindingConstants} class defines common constants, which are
+ * The {@link OctoPrintBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 @NonNullByDefault
-public class OktoPrintBindingConstants {
+public class OctoPrintBindingConstants {
 
-    private static final String BINDING_ID = "oktoprint";
+    private static final String BINDING_ID = "octoprint";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");

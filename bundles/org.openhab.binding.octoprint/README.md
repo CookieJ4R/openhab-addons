@@ -1,4 +1,4 @@
-# OktoPrint Binding
+# OctoPrint Binding
 
 _Give some details about what this binding is meant for - a protocol, system, specific device._
 
@@ -19,9 +19,9 @@ _Describe the available auto-discovery features here. Mention for what it works 
 _If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
 
 ```
-# Configuration for the OktoPrint Binding
+# Configuration for the OctoPrint Binding
 #
-# Default secret key for the pairing of the OktoPrint Thing.
+# Default secret key for the pairing of the OctoPrint Thing.
 # It has to be between 10-40 (alphanumeric) characters.
 # This may be changed by the user for security reasons.
 secret=openHABSecret
