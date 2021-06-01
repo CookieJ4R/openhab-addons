@@ -5,5 +5,7 @@
 
 	<name>OctoPrint Binding</name>
 	<description>This is the binding for OctoPrint.</description>
+	<author>Kevin Jonathan Binder, Dario Pläschke, Nour El-Dien Kamel, Florian Silber</author>
+
 
 </binding:binding>
