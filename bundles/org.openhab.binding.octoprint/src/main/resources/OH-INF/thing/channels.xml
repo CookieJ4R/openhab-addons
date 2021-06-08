@@ -4,11 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="OctoPrintPrinter">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="OctoPrintBridge"/>
-		</supported-bridge-type-refs>
-		<label>OctoPrint Printer</label>
-		<description>A Printer managed by the OctoPrint server</description>
-	</thing-type>
+	<channel-type id="printers">
+		<item-type>String</item-type>
+		<label>Printer-Data</label>
+		<description>Printer Data</description>
+	</channel-type>
+
 </thing:thing-descriptions>

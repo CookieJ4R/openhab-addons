@@ -13,12 +13,17 @@
 package org.openhab.binding.octoprint.internal;
 
 import static org.openhab.binding.octoprint.internal.OctoPrintBindingConstants.*;
+import static org.openhab.core.model.script.actions.HTTP.sendHttpGetRequest;
 
+import com.google.gson.Gson;
+import org.bouncycastle.jcajce.provider.asymmetric.GOST;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -26,31 +31,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OctoPrintHandler} is responsible for handling commands, which are
+ * The {@link OctoPrintBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 @NonNullByDefault
-public class OctoPrintHandler extends BaseThingHandler {
+public class OctoPrintBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(OctoPrintHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OctoPrintBridgeHandler.class);
 
     private @Nullable OctoPrintConfiguration config;
 
-    public OctoPrintHandler(Thing thing) {
-        super(thing);
+    private Gson gson = new Gson();
+
+    public OctoPrintBridgeHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+        logger.debug("Received command {} on channel {}", command.toFullString(), channelUID.getId());
+        if (PRINTERS_CHANNEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
             }
 
             // TODO: handle command
-
+            if(command.toString().equals("version")){
+                logger.debug("GETTING SERVER VERSION...");
+                String url = "http://" + config.hostname + ":" + config.port +"/api/version?apikey=" + config.apikey;
+                logger.debug("{}", url);
+                String version = sendHttpGetRequest(url, 1000);
+                logger.debug("{}", version);
+            }
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -61,7 +75,6 @@ public class OctoPrintHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(OctoPrintConfiguration.class);
-
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing
         // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in

@@ -23,6 +23,6 @@ public class OctoPrintConfiguration {
      * Sample configuration parameters. Replace with your own.
      */
     public String hostname;
-    public String password;
-    public int refreshInterval;
+    public int port;
+    public String apikey;
 }
