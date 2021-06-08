@@ -27,7 +27,7 @@ public class OctoPrintBindingConstants {
     private static final String BINDING_ID = "octoprint";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "OctoPrintBridge");
+    public static final ThingTypeUID THING_TYPE_OCTOPRINT_SERVER = new ThingTypeUID(BINDING_ID, "OctoPrintServer");
 
     // List of all Channel ids
     public static final String PRINTERS_CHANNEL = "printers";

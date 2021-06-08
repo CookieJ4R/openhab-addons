@@ -4,11 +4,29 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="OctoPrintPrinter">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="OctoPrintBridge"/>
-		</supported-bridge-type-refs>
-		<label>OctoPrint Printer</label>
-		<description>A Printer managed by the OctoPrint server</description>
+	<thing-type id="OctoPrintServer">
+		<label>OctoPrint Server</label>
+		<description>OctoPrint bridge enabling communication with 3D-printers connected to octoprint.</description>
+		<channels>
+			<channel id="printers" typeId="printers"/>
+		</channels>
+		<config-description>
+			<parameter required="true" type="text" name="hostname">
+				<context>network-address</context>
+´				<label>Hostname or IP address</label>
+				<description>The IP or Hostname of the OctoPrint server.</description>
+			</parameter>
+			<parameter required="true" type="integer" name="port">
+				<context>serial-port</context>
+				<label>Port</label>
+				<description>Port of the OctoPrint server.</description>
+				<default>5000</default>
+			</parameter>
+			<parameter required="true" type="text" name="apikey">
+				<context>password</context>
+				<label>API Key</label>
+				<description>API Key for using the REST-Api of the OctoPrint server.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 </thing:thing-descriptions>

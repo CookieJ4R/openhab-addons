@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.octoprint", service = ThingHandlerFactory.class)
 public class OctoPrintHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OCTOPRINT_SERVER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,8 +47,8 @@ public class OctoPrintHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new OctoPrintBridgeHandler((Bridge)thing);
+        if (THING_TYPE_OCTOPRINT_SERVER.equals(thingTypeUID)) {
+            return new OctoPrintThingHandler(thing);
         }
 
         return null;

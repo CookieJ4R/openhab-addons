@@ -31,22 +31,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OctoPrintBridgeHandler} is responsible for handling commands, which are
+ * The {@link OctoPrintThingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 @NonNullByDefault
-public class OctoPrintBridgeHandler extends BaseBridgeHandler {
+public class OctoPrintThingHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(OctoPrintBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OctoPrintThingHandler.class);
 
     private @Nullable OctoPrintConfiguration config;
 
     private Gson gson = new Gson();
 
-    public OctoPrintBridgeHandler(Bridge bridge) {
-        super(bridge);
+    public OctoPrintThingHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
