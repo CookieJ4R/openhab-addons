@@ -14,21 +14,20 @@ package org.openhab.binding.octoprint.internal;
 
 import static org.openhab.binding.octoprint.internal.OctoPrintBindingConstants.*;
 import static org.openhab.core.model.script.actions.HTTP.sendHttpGetRequest;
+import static org.openhab.core.model.script.actions.HTTP.sendHttpPostRequest;
 
-import com.google.gson.Gson;
-import org.bouncycastle.jcajce.provider.asymmetric.GOST;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link OctoPrintThingHandler} is responsible for handling commands, which are
@@ -58,12 +57,17 @@ public class OctoPrintThingHandler extends BaseThingHandler {
             }
 
             // TODO: handle command
-            if(command.toString().equals("version")){
+            if (command.toString().equals("version")) {
                 logger.debug("GETTING SERVER VERSION...");
-                String url = "http://" + config.hostname + ":" + config.port +"/api/version?apikey=" + config.apikey;
+                String url = "http://" + config.hostname + ":" + config.port + "/api/version?apikey=" + config.apikey;
                 logger.debug("{}", url);
                 String version = sendHttpGetRequest(url, 1000);
                 logger.debug("{}", version);
+            } else if (command.toString().equals("resume")) {
+                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+                String content = "{\"command\":\"pause\", \"action\":\"resume\"}";
+                String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                logger.debug("{}", result);
             }
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:

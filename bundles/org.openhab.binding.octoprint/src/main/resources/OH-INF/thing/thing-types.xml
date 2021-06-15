@@ -13,7 +13,8 @@
 		<config-description>
 			<parameter required="true" type="text" name="hostname">
 				<context>network-address</context>
-´				<label>Hostname or IP address</label>
+				´
+				<label>Hostname or IP address</label>
 				<description>The IP or Hostname of the OctoPrint server.</description>
 			</parameter>
 			<parameter required="true" type="integer" name="port">
