@@ -19,9 +19,6 @@ package org.openhab.binding.octoprint.internal;
  */
 public class OctoPrintConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
     public String hostname;
     public int port;
     public String apikey;

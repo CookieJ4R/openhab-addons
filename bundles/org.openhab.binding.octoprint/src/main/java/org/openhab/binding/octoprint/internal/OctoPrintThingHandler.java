@@ -51,7 +51,7 @@ public class OctoPrintThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} on channel {}", command.toFullString(), channelUID.getId());
-        if (PRINTERS_CHANNEL.equals(channelUID.getId())) {
+        if (TEST_CHANNEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
             }
@@ -66,6 +66,31 @@ public class OctoPrintThingHandler extends BaseThingHandler {
             } else if (command.toString().equals("resume")) {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"pause\", \"action\":\"resume\"}";
+                String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                logger.debug("{}", result);
+            } else if (command.toString().equals("toggle")) {
+                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+                String content = "{\"command\":\"pause\", \"action\":\"toggle\"}";
+                String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                logger.debug("{}", result);
+            } else if (command.toString().equals("pause")) {
+                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+                String content = "{\"command\":\"pause\", \"action\":\"pause\"}";
+                String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                logger.debug("{}", result);
+            } else if (command.toString().equals("start")) {
+                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+                String content = "{\"command\":\"start\"}";
+                String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                logger.debug("{}", result);
+            } else if (command.toString().equals("cancel")) {
+                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+                String content = "{\"command\":\"cancel\"}";
+                String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                logger.debug("{}", result);
+            } else if (command.toString().equals("restart")) {
+                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+                String content = "{\"command\":\"restart\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
                 logger.debug("{}", result);
             }

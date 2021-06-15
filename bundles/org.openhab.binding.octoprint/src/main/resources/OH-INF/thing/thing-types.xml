@@ -6,14 +6,13 @@
 
 	<thing-type id="OctoPrintServer">
 		<label>OctoPrint Server</label>
-		<description>OctoPrint bridge enabling communication with 3D-printers connected to octoprint.</description>
+		<description>OctoPrint server thing, that handles communication with the connected 3D-printer.</description>
 		<channels>
-			<channel id="printers" typeId="printers"/>
+			<channel id="test" typeId="test"/>
 		</channels>
 		<config-description>
 			<parameter required="true" type="text" name="hostname">
 				<context>network-address</context>
-				´
 				<label>Hostname or IP address</label>
 				<description>The IP or Hostname of the OctoPrint server.</description>
 			</parameter>

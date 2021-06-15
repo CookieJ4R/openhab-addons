@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="printers">
+	<channel-type id="test">
 		<item-type>String</item-type>
-		<label>Printer-Data</label>
-		<description>Printer Data</description>
+		<label>Test</label>
+		<description>Test Channel</description>
 	</channel-type>
 
 </thing:thing-descriptions>
