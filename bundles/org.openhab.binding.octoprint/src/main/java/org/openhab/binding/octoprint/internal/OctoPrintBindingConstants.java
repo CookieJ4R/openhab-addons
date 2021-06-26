@@ -30,5 +30,7 @@ public class OctoPrintBindingConstants {
     public static final ThingTypeUID THING_TYPE_OCTOPRINT_SERVER = new ThingTypeUID(BINDING_ID, "OctoPrintServer");
 
     // List of all Channel ids
-    public static final String TEST_CHANNEL = "test";
+    public static final String JOBS_CHANNEL = "jobs";
+    public static final String JOB_COMPLETION = "completion";
+    public static final String TEMPERATURE_CHANNEL = "temperature";
 }

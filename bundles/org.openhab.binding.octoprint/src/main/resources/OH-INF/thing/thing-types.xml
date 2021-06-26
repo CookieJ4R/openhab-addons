@@ -8,7 +8,9 @@
 		<label>OctoPrint Server</label>
 		<description>OctoPrint server thing, that handles communication with the connected 3D-printer.</description>
 		<channels>
-			<channel id="test" typeId="test"/>
+			<channel id="jobs" typeId="jobs"/>
+			<channel id="completion" typeId="completion"/>
+			<channel id="temperature" typeId="temperature"/>
 		</channels>
 		<config-description>
 			<parameter required="true" type="text" name="hostname">

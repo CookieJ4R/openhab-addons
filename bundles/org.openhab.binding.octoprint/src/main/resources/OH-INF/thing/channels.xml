@@ -4,10 +4,20 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="test">
+	<channel-type id="jobs">
 		<item-type>String</item-type>
-		<label>Test</label>
+		<label>Job</label>
 		<description>Test Channel</description>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>String</item-type>
+		<label>Temperature</label>
+		<description>Temperature Channel</description>
+	</channel-type>
+	<channel-type id="completion">
+		<item-type>String</item-type>
+		<label>Completion</label>
+		<description>Completion Channel</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -18,6 +18,8 @@ import static org.openhab.core.model.script.actions.HTTP.sendHttpPostRequest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.octoprint.internal.model.JobStatusModel;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -51,12 +53,13 @@ public class OctoPrintThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} on channel {}", command.toFullString(), channelUID.getId());
-        if (TEST_CHANNEL.equals(channelUID.getId())) {
+        if (JOBS_CHANNEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
+                logger.debug("Refresh called jobs");
+
             }
 
-            // TODO: handle command
             if (command.toString().equals("version")) {
                 logger.debug("GETTING SERVER VERSION...");
                 String url = "http://" + config.hostname + ":" + config.port + "/api/version?apikey=" + config.apikey;
@@ -67,6 +70,7 @@ public class OctoPrintThingHandler extends BaseThingHandler {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"pause\", \"action\":\"resume\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                updateState(JOBS_CHANNEL, new StringType("Running..."));
                 logger.debug("{}", result);
             } else if (command.toString().equals("toggle")) {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
@@ -77,27 +81,44 @@ public class OctoPrintThingHandler extends BaseThingHandler {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"pause\", \"action\":\"pause\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                updateState(JOBS_CHANNEL, new StringType("Paused..."));
                 logger.debug("{}", result);
             } else if (command.toString().equals("start")) {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"start\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                updateState(JOBS_CHANNEL, new StringType("Running..."));
                 logger.debug("{}", result);
             } else if (command.toString().equals("cancel")) {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"cancel\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                updateState(JOBS_CHANNEL, new StringType("Aborted..."));
                 logger.debug("{}", result);
-            } else if (command.toString().equals("restart")) {
-                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-                String content = "{\"command\":\"restart\"}";
-                String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                logger.debug("{}", result);
-            }
+            } /*
+               * else if (command.toString().equals("restart")) {
+               * String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+               * String content = "{\"command\":\"restart\"}";
+               * String result = sendHttpPostRequest(url, "application/json", content, 5000);
+               * logger.debug("{}", result);
+               * }
+               */
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
+        } else if (TEMPERATURE_CHANNEL.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                logger.debug("Refresh called temp");
+            }
+        } else if (JOB_COMPLETION.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+                String result = sendHttpGetRequest(url, 5000);
+                JobStatusModel job = gson.fromJson(result, JobStatusModel.class);
+                logger.debug("Received {}", result);
+                updateState(JOBS_CHANNEL, new StringType(String.valueOf(job.progress.completion)));
+            }
         }
     }
 
