@@ -8,8 +8,10 @@
 		<label>OctoPrint Server</label>
 		<description>OctoPrint server thing, that handles communication with the connected 3D-printer.</description>
 		<channels>
-			<channel id="jobs" typeId="jobs"/>
-			<channel id="completion" typeId="completion"/>
+			<channel id="job_commands" typeId="job_commands"/>
+			<channel id="job_completion" typeId="job_completion"/>
+			<channel id="job_runtime" typeId="job_runtime"/>
+			<channel id="job_runtime_left" typeId="job_runtime_left"/>
 			<channel id="temperature" typeId="temperature"/>
 		</channels>
 		<config-description>

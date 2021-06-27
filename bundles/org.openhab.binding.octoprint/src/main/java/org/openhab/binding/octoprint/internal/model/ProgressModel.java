@@ -18,4 +18,6 @@ package org.openhab.binding.octoprint.internal.model;
 public class ProgressModel {
 
     public float completion;
+    public int printTime;
+    public int printTimeLeft;
 }
