@@ -29,5 +29,10 @@
 		<label>Runtime left</label>
 		<description>Runtime left Channel</description>
 	</channel-type>
+	<channel-type id="job_filename">
+		<item-type>String</item-type>
+		<label>Job Filename</label>
+		<description>Job filename Channel</description>
+	</channel-type>
 
 </thing:thing-descriptions>

@@ -68,63 +68,82 @@ public class OctoPrintThingHandler extends BaseThingHandler {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"pause\", \"action\":\"resume\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType("Running..."));
+                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
+                refresh();
                 logger.debug("{}", result);
             } else if (command.toString().equals("toggle")) {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"pause\", \"action\":\"toggle\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
                 logger.debug("{}", result);
+                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
+                refresh();
             } else if (command.toString().equals("pause")) {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"pause\", \"action\":\"pause\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType("Paused..."));
+                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
                 logger.debug("{}", result);
+                refresh();
             } else if (command.toString().equals("start")) {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"start\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType("Running..."));
+                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
                 logger.debug("{}", result);
+                refresh();
             } else if (command.toString().equals("cancel")) {
                 String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
                 String content = "{\"command\":\"cancel\"}";
                 String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType("Aborted..."));
+                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
                 logger.debug("{}", result);
-            } /*
-               * else if (command.toString().equals("restart")) {
-               * String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-               * String content = "{\"command\":\"restart\"}";
-               * String result = sendHttpPostRequest(url, "application/json", content, 5000);
-               * logger.debug("{}", result);
-               * }
-               */
+                refresh();
+            } else if (command.toString().equals("restart")) {
+                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
+                String content = "{\"command\":\"restart\"}";
+                String result = sendHttpPostRequest(url, "application/json", content, 5000);
+                logger.debug("{}", result);
+                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
+                refresh();
+            }
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
         } else if (TEMPERATURE_CHANNEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
+            if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
                 logger.debug("Refresh called temp");
             }
-        } else if (JOB_COMPLETION.equals(channelUID.getId())) {
+        } else if (JOB_COMPLETION_CHANNEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
                 JobStatusModel job = getJobStatus();
-                updateState(JOB_COMPLETION, new StringType(String.format("%.2f", job.progress.completion)));
+                updateState(JOB_COMPLETION_CHANNEL, new StringType(String.format("%.2f", job.progress.completion)));
             }
-        } else if (JOB_RUNTIME.equals(channelUID.getId())) {
+        } else if (JOB_RUNTIME_CHANNEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
                 JobStatusModel job = getJobStatus();
-                updateState(JOB_RUNTIME, new DecimalType(job.progress.printTime));
+                updateState(JOB_RUNTIME_CHANNEL, new DecimalType(job.progress.printTime));
             }
-        } else if (JOB_RUNTIME_LEFT.equals(channelUID.getId())) {
+        } else if (JOB_RUNTIME_LEFT_CHANNEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
                 JobStatusModel job = getJobStatus();
-                updateState(JOB_RUNTIME_LEFT, new DecimalType(job.progress.printTimeLeft));
+                updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(job.progress.printTimeLeft));
+            }
+        } else if (JOB_FILENAME_CHANNEL.equals(channelUID.getId())) {
+            if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
+                JobStatusModel jobStatus = getJobStatus();
+                updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
             }
         }
+    }
+
+    public void refresh() {
+        JobStatusModel jobStatus = getJobStatus();
+        updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
+        updateState(JOB_COMPLETION_CHANNEL, new StringType(String.format("%.2f", jobStatus.progress.completion)));
+        updateState(JOB_RUNTIME_CHANNEL, new DecimalType(jobStatus.progress.printTime));
+        updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(jobStatus.progress.printTimeLeft));
     }
 
     public JobStatusModel getJobStatus() {

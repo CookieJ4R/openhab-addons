@@ -12,6 +12,7 @@
 			<channel id="job_completion" typeId="job_completion"/>
 			<channel id="job_runtime" typeId="job_runtime"/>
 			<channel id="job_runtime_left" typeId="job_runtime_left"/>
+			<channel id="job_filename" typeId="job_filename"/>
 			<channel id="temperature" typeId="temperature"/>
 		</channels>
 		<config-description>

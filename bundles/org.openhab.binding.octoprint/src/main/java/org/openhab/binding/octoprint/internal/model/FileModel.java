@@ -15,9 +15,7 @@ package org.openhab.binding.octoprint.internal.model;
 /**
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
-public class JobStatusModel {
+public class FileModel {
 
-    public JobModel job;
-    public ProgressModel progress;
-    public String state;
+    public String name;
 }

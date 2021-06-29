@@ -32,9 +32,10 @@ public class OctoPrintBindingConstants {
     // List of all Channel ids
     public static final String JOB_COMMANDS_CHANNEL = "job_commands";
 
-    public static final String JOB_RUNTIME = "job_runtime";
-    public static final String JOB_RUNTIME_LEFT = "job_runtime_left";
-    public static final String JOB_COMPLETION = "job_completion";
+    public static final String JOB_RUNTIME_CHANNEL = "job_runtime";
+    public static final String JOB_RUNTIME_LEFT_CHANNEL = "job_runtime_left";
+    public static final String JOB_COMPLETION_CHANNEL = "job_completion";
+    public static final String JOB_FILENAME_CHANNEL = "job_filename";
 
     public static final String TEMPERATURE_CHANNEL = "temperature";
 }
