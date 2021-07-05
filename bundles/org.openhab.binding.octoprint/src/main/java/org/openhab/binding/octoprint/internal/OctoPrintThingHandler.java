@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link OctoPrintThingHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link OctoPrintThingHandler} is responsible for initialization, handling commands, scheduling updates
+ * and de-initialization
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
@@ -66,8 +66,8 @@ public class OctoPrintThingHandler extends BaseThingHandler {
         logger.debug("Received command {} on channel {}", command.toFullString(), channelUID.getId());
         if (JOB_COMMANDS_CHANNEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-                logger.debug("Refresh called jobs");
+                JobStatusModel jobStatus = getJobStatus();
+                updateState(JOB_COMMANDS_CHANNEL, new StringType(jobStatus.state));
             }
             if (command.toString().equals("version")) {
                 logger.debug("GETTING SERVER VERSION...");
