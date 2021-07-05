@@ -118,10 +118,6 @@ public class OctoPrintThingHandler extends BaseThingHandler {
                 updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
                 refresh();
             }
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
         } else if (TEMPERATURE_CHANNEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
                 logger.debug("Refresh called temp");
@@ -151,20 +147,25 @@ public class OctoPrintThingHandler extends BaseThingHandler {
 
     public void refresh() {
         JobStatusModel jobStatus = getJobStatus();
+        if (jobStatus == null)
+            return;
         updateState(JOB_COMMANDS_CHANNEL, new StringType(jobStatus.state));
         updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
         updateState(JOB_COMPLETION_CHANNEL, new StringType(String.format("%.2f", jobStatus.progress.completion)));
         updateState(JOB_RUNTIME_CHANNEL, new DecimalType(jobStatus.progress.printTime));
         updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(jobStatus.progress.printTimeLeft));
-        logger.debug("refreshing");
     }
 
+    @Nullable
     public JobStatusModel getJobStatus() {
         String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
         String result = sendHttpGetRequest(url, 5000);
+        if (result == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not reach OctoPrint-Server");
+            return null;
+        }
         JobStatusModel job = gson.fromJson(result, JobStatusModel.class);
-        if (job == null)
-            return new JobStatusModel();
         return job;
     }
 
@@ -176,7 +177,6 @@ public class OctoPrintThingHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             String url = "http://" + config.hostname + ":" + config.port + "/api/version?apikey=" + config.apikey;
             String result = sendHttpGetRequest(url, 2000);
-            logger.debug("RESULT IS: {}", result);
             if (result == null)
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Can not access OctoPrint-Server. This could be caused by a wrong hostname, port, api-key or simply by the OctoPrint-Server being offline");
