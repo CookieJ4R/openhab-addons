@@ -37,5 +37,6 @@ public class OctoPrintBindingConstants {
     public static final String JOB_COMPLETION_CHANNEL = "job_completion";
     public static final String JOB_FILENAME_CHANNEL = "job_filename";
 
-    public static final String TEMPERATURE_CHANNEL = "temperature";
+    public static final String TEMPERATURE_TOOL_CHANNEL = "tool_temperature";
+    public static final String TEMPERATURE_BED_CHANNEL = "bed_temperature";
 }

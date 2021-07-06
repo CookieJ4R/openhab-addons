@@ -14,13 +14,13 @@ package org.openhab.binding.octoprint.internal;
 
 import static org.openhab.binding.octoprint.internal.OctoPrintBindingConstants.*;
 import static org.openhab.core.model.script.actions.HTTP.sendHttpGetRequest;
-import static org.openhab.core.model.script.actions.HTTP.sendHttpPostRequest;
 
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.octoprint.internal.model.ItemTemperatureModel;
 import org.openhab.binding.octoprint.internal.model.JobStatusModel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -34,8 +34,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link OctoPrintThingHandler} is responsible for initialization, handling commands, scheduling updates
  * and de-initialization
@@ -48,7 +46,7 @@ public class OctoPrintThingHandler extends BaseThingHandler {
 
     private @Nullable OctoPrintConfiguration config;
 
-    private Gson gson = new Gson();
+    private @Nullable OctoPrintDatahandler datahandler;
 
     private TimerTask updateTask = new TimerTask() {
         @Override
@@ -64,114 +62,100 @@ public class OctoPrintThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} on channel {}", command.toFullString(), channelUID.getId());
-        if (JOB_COMMANDS_CHANNEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                JobStatusModel jobStatus = getJobStatus();
-                updateState(JOB_COMMANDS_CHANNEL, new StringType(jobStatus.state));
-            }
-            if (command.toString().equals("version")) {
-                logger.debug("GETTING SERVER VERSION...");
-                String url = "http://" + config.hostname + ":" + config.port + "/api/version?apikey=" + config.apikey;
-                logger.debug("{}", url);
-                String version = sendHttpGetRequest(url, 1000);
-                logger.debug("{}", version);
-            } else if (command.toString().equals("resume")) {
-                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-                String content = "{\"command\":\"pause\", \"action\":\"resume\"}";
-                String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
-                refresh();
-                logger.debug("{}", result);
-            } else if (command.toString().equals("toggle")) {
-                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-                String content = "{\"command\":\"pause\", \"action\":\"toggle\"}";
-                String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                logger.debug("{}", result);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
-                refresh();
-            } else if (command.toString().equals("pause")) {
-                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-                String content = "{\"command\":\"pause\", \"action\":\"pause\"}";
-                String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
-                logger.debug("{}", result);
-                refresh();
-            } else if (command.toString().equals("start")) {
-                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-                String content = "{\"command\":\"start\"}";
-                String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
-                logger.debug("{}", result);
-                refresh();
-            } else if (command.toString().equals("cancel")) {
-                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-                String content = "{\"command\":\"cancel\"}";
-                String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
-                logger.debug("{}", result);
-                refresh();
-            } else if (command.toString().equals("restart")) {
-                String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-                String content = "{\"command\":\"restart\"}";
-                String result = sendHttpPostRequest(url, "application/json", content, 5000);
-                logger.debug("{}", result);
-                updateState(JOB_COMMANDS_CHANNEL, new StringType(getJobStatus().state));
-                refresh();
-            }
-        } else if (TEMPERATURE_CHANNEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
-                logger.debug("Refresh called temp");
-            }
-        } else if (JOB_COMPLETION_CHANNEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
-                JobStatusModel job = getJobStatus();
-                updateState(JOB_COMPLETION_CHANNEL, new StringType(String.format("%.2f", job.progress.completion)));
-            }
-        } else if (JOB_RUNTIME_CHANNEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
-                JobStatusModel job = getJobStatus();
-                updateState(JOB_RUNTIME_CHANNEL, new DecimalType(job.progress.printTime));
-            }
-        } else if (JOB_RUNTIME_LEFT_CHANNEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
-                JobStatusModel job = getJobStatus();
-                updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(job.progress.printTimeLeft));
-            }
-        } else if (JOB_FILENAME_CHANNEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType || command.toString().equals("REFRESH")) {
-                JobStatusModel jobStatus = getJobStatus();
-                updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
-            }
+        JobStatusModel jobStatus = datahandler.getJobStatus();
+        ItemTemperatureModel temperatureStatus = datahandler.getTemperatureData();
+        if (jobStatus == null || temperatureStatus == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not reach OctoPrint-Server");
+            return;
+        }
+        switch (channelUID.getId()) {
+            case JOB_COMMANDS_CHANNEL:
+                if (command instanceof RefreshType) {
+                    updateState(JOB_COMMANDS_CHANNEL, new StringType(jobStatus.state));
+                }
+                switch (command.toString()) {
+                    case "resume":
+                        datahandler.sendJobRequest("{\"command\":\"pause\", \"action\":\"resume\"}");
+                        updateState(JOB_COMMANDS_CHANNEL, new StringType(datahandler.getJobStatus().state));
+                        break;
+                    case "toggle":
+                        datahandler.sendJobRequest("{\"command\":\"pause\", \"action\":\"toggle\"}");
+                        updateState(JOB_COMMANDS_CHANNEL, new StringType(datahandler.getJobStatus().state));
+                        break;
+                    case "pause":
+                        datahandler.sendJobRequest("{\"command\":\"pause\", \"action\":\"pause\"}");
+                        updateState(JOB_COMMANDS_CHANNEL, new StringType(datahandler.getJobStatus().state));
+                        break;
+                    case "start":
+                        datahandler.sendJobRequest("{\"command\":\"start\"}");
+                        updateState(JOB_COMMANDS_CHANNEL, new StringType(datahandler.getJobStatus().state));
+                        break;
+                    case "cancel":
+                        datahandler.sendJobRequest("{\"command\":\"cancel\"}");
+                        updateState(JOB_COMMANDS_CHANNEL, new StringType(datahandler.getJobStatus().state));
+                        break;
+                    case "restart":
+                        datahandler.sendJobRequest("{\"command\":\"restart\"}");
+                        updateState(JOB_COMMANDS_CHANNEL, new StringType(datahandler.getJobStatus().state));
+                        break;
+                }
+                break;
+            case JOB_COMPLETION_CHANNEL:
+                if (command instanceof RefreshType) {
+                    updateState(JOB_COMPLETION_CHANNEL,
+                            new StringType(String.format("%.2f", jobStatus.progress.completion)));
+                }
+                break;
+            case JOB_RUNTIME_CHANNEL:
+                if (command instanceof RefreshType) {
+                    updateState(JOB_RUNTIME_CHANNEL, new DecimalType(jobStatus.progress.printTime));
+                }
+                break;
+            case JOB_RUNTIME_LEFT_CHANNEL:
+                if (command instanceof RefreshType) {
+                    updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(jobStatus.progress.printTimeLeft));
+                }
+                break;
+            case JOB_FILENAME_CHANNEL:
+                if (command instanceof RefreshType) {
+                    updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
+                }
+                break;
+            case TEMPERATURE_TOOL_CHANNEL:
+                if (command instanceof RefreshType) {
+                    updateState(TEMPERATURE_TOOL_CHANNEL, new DecimalType(temperatureStatus.tool0.actual));
+                }
+                break;
+            case TEMPERATURE_BED_CHANNEL:
+                if (command instanceof RefreshType) {
+                    updateState(TEMPERATURE_BED_CHANNEL, new DecimalType(temperatureStatus.bed.actual));
+                }
+                break;
         }
     }
 
     public void refresh() {
-        JobStatusModel jobStatus = getJobStatus();
-        if (jobStatus == null)
-            return;
-        updateState(JOB_COMMANDS_CHANNEL, new StringType(jobStatus.state));
-        updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
-        updateState(JOB_COMPLETION_CHANNEL, new StringType(String.format("%.2f", jobStatus.progress.completion)));
-        updateState(JOB_RUNTIME_CHANNEL, new DecimalType(jobStatus.progress.printTime));
-        updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(jobStatus.progress.printTimeLeft));
-    }
-
-    @Nullable
-    public JobStatusModel getJobStatus() {
-        String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
-        String result = sendHttpGetRequest(url, 5000);
-        if (result == null) {
+        JobStatusModel jobStatus = datahandler.getJobStatus();
+        ItemTemperatureModel temperatureStatus = datahandler.getTemperatureData();
+        if (jobStatus == null || temperatureStatus == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not reach OctoPrint-Server");
-            return null;
+            return;
         }
-        JobStatusModel job = gson.fromJson(result, JobStatusModel.class);
-        return job;
+        updateState(JOB_COMMANDS_CHANNEL, new StringType(jobStatus.state));
+        updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
+        updateState(JOB_COMPLETION_CHANNEL, new DecimalType(jobStatus.progress.completion));
+        updateState(JOB_RUNTIME_CHANNEL, new DecimalType(jobStatus.progress.printTime));
+        updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(jobStatus.progress.printTimeLeft));
+        updateState(TEMPERATURE_TOOL_CHANNEL, new DecimalType(temperatureStatus.tool0.actual));
+        updateState(TEMPERATURE_BED_CHANNEL, new DecimalType(temperatureStatus.bed.actual));
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(OctoPrintConfiguration.class);
+        datahandler = new OctoPrintDatahandler(config);
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {

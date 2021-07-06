@@ -9,11 +9,6 @@
 		<label>Job Status</label>
 		<description>Job status and command Channel</description>
 	</channel-type>
-	<channel-type id="temperature">
-		<item-type>String</item-type>
-		<label>Temperature</label>
-		<description>Temperature Channel</description>
-	</channel-type>
 	<channel-type id="job_completion">
 		<item-type>String</item-type>
 		<label>Completion</label>
@@ -33,6 +28,16 @@
 		<item-type>String</item-type>
 		<label>Job Filename</label>
 		<description>Job filename Channel</description>
+	</channel-type>
+	<channel-type id="tool_temperature">
+		<item-type>Number</item-type>
+		<label>Tool Temperature</label>
+		<description>Tool-Temperature Channel</description>
+	</channel-type>
+	<channel-type id="bed_temperature">
+		<item-type>Number</item-type>
+		<label>Bed Temperature</label>
+		<description>Bed-Temperature Channel</description>
 	</channel-type>
 
 </thing:thing-descriptions>

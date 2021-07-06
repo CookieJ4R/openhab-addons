@@ -13,7 +13,8 @@
 			<channel id="job_runtime" typeId="job_runtime"/>
 			<channel id="job_runtime_left" typeId="job_runtime_left"/>
 			<channel id="job_filename" typeId="job_filename"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="tool_temperature" typeId="tool_temperature"/>
+			<channel id="bed_temperature" typeId="bed_temperature"/>
 		</channels>
 		<config-description>
 			<parameter required="true" type="text" name="hostname">
