@@ -37,7 +37,9 @@ public class OctoPrintDatahandler {
     }
 
     /***
-     * This method queries the OctoPrint server for the current job information and parses the returned JSON to a {@link JobStatusModel}.
+     * This method queries the OctoPrint server for the current job information and parses the returned JSON to a
+     * {@link JobStatusModel}.
+     * 
      * @return The JobStatusModel parsed from the request result
      */
     @Nullable
@@ -51,7 +53,9 @@ public class OctoPrintDatahandler {
     }
 
     /***
-     * This method queries the OctoPrint server for the current temperature data and parses the returned JSON to a {@link ItemTemperatureModel}
+     * This method queries the OctoPrint server for the current temperature data and parses the returned JSON to a
+     * {@link ItemTemperatureModel}
+     * 
      * @return The ItemTemperatureModel parsed from the request result
      */
     @Nullable
@@ -64,10 +68,11 @@ public class OctoPrintDatahandler {
         return job;
     }
 
-
     /***
      * This method sends a post request to the OctoPrint server to control the printer (start, pause, etc.)
-     * @param content The content the post request should contain in json notation (example: "{\"command\":\"pause\", \"action\":\"resume\"}")
+     * 
+     * @param content The content the post request should contain in json notation
+     *            (example: "{\"command\":\"pause\",\"action\":\"resume\"}")
      */
     public void sendJobRequest(String content) {
         String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;

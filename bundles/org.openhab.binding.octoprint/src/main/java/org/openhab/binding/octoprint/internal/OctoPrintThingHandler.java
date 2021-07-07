@@ -61,16 +61,16 @@ public class OctoPrintThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        //Get printer data
+        // Get printer data
         JobStatusModel jobStatus = datahandler.getJobStatus();
         ItemTemperatureModel temperatureStatus = datahandler.getTemperatureData();
-        //update ThingStatus if no result was returned for one of the requests
+        // update ThingStatus if no result was returned for one of the requests
         if (jobStatus == null || temperatureStatus == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not reach OctoPrint-Server");
             return;
         }
-        //handle channel and command
+        // handle channel and command
         switch (channelUID.getId()) {
             case JOB_COMMANDS_CHANNEL:
                 if (command instanceof RefreshType) {
@@ -148,18 +148,18 @@ public class OctoPrintThingHandler extends BaseThingHandler {
      * If the server is not reachable it sets the ThingStatus to offline
      */
     public void refresh() {
-        //Get data
+        // Get data
         JobStatusModel jobStatus = datahandler.getJobStatus();
         ItemTemperatureModel temperatureStatus = datahandler.getTemperatureData();
 
-        //Check if the server was reachable
+        // Check if the server was reachable
         if (jobStatus == null || temperatureStatus == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not reach OctoPrint-Server");
             return;
         }
 
-        //Update channel states
+        // Update channel states
         updateState(JOB_COMMANDS_CHANNEL, new StringType(jobStatus.state));
         updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
         updateState(JOB_COMPLETION_CHANNEL, new DecimalType(jobStatus.progress.completion));
@@ -176,21 +176,21 @@ public class OctoPrintThingHandler extends BaseThingHandler {
         datahandler = new OctoPrintDatahandler(config);
         updateStatus(ThingStatus.UNKNOWN);
 
-        //Execute connection check on a different thread to leave init method as fast as possible
+        // Execute connection check on a different thread to leave init method as fast as possible
         scheduler.execute(() -> {
             String url = "http://" + config.hostname + ":" + config.port + "/api/version?apikey=" + config.apikey;
             String result = sendHttpGetRequest(url, 2000);
 
-            //request timeout => not reachable (OFFLINE)
+            // request timeout => not reachable (OFFLINE)
             if (result == null)
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Can not access OctoPrint-Server. This could be caused by a wrong hostname, port, api-key or simply by the OctoPrint-Server being offline");
-            //received expected answer => reachable (ONLINE)
+            // received expected answer => reachable (ONLINE)
             else if (result.contains("OctoPrint")) {
                 updateStatus(ThingStatus.ONLINE);
                 scheduler.scheduleWithFixedDelay(updateTask, 0, config.refreshrate, TimeUnit.SECONDS);
             }
-            //received unexpected answer => reachable but not an OctoPrint server (OFFLINE)
+            // received unexpected answer => reachable but not an OctoPrint server (OFFLINE)
             else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Got an unexpected answer from server. This could be caused by a different service running on the configured host and port.");
@@ -200,7 +200,7 @@ public class OctoPrintThingHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        //Cancel data polling refresh cycle on removal
+        // Cancel data polling refresh cycle on removal
         updateTask.cancel();
     }
 }

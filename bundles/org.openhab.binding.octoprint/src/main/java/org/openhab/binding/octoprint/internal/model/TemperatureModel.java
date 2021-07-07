@@ -13,7 +13,8 @@
 package org.openhab.binding.octoprint.internal.model;
 
 /**
- * The {@link TemperatureModel} contains all used information about the temperature of a single tool or the bed of the printer
+ * The {@link TemperatureModel} contains all used information about the temperature of a single tool or the bed of the
+ * printer
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
