@@ -13,7 +13,8 @@
 			<channel id="job_runtime" typeId="job_runtime"/>
 			<channel id="job_runtime_left" typeId="job_runtime_left"/>
 			<channel id="job_filename" typeId="job_filename"/>
-			<channel id="tool_temperature" typeId="tool_temperature"/>
+			<channel id="tool_1_temperature" typeId="tool_1_temperature"/>
+			<channel id="tool_2_temperature" typeId="tool_2_temperature"/>
 			<channel id="bed_temperature" typeId="bed_temperature"/>
 		</channels>
 		<config-description>
@@ -32,6 +33,12 @@
 				<context>password</context>
 				<label>API Key</label>
 				<description>API Key for using the REST-Api of the OctoPrint server.</description>
+			</parameter>
+			<parameter required="true" type="text" name="refreshrate">
+				<context>time</context>
+				<label>Refresh Rate</label>
+				<description>The time between the polling for new data from the OctoPrint server in seconds.</description>
+				<default>1</default>
 			</parameter>
 		</config-description>
 	</thing-type>

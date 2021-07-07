@@ -22,4 +22,5 @@ public class OctoPrintConfiguration {
     public String hostname;
     public int port;
     public String apikey;
+    public long refreshrate;
 }

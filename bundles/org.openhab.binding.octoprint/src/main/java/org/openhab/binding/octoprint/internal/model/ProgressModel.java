@@ -13,6 +13,8 @@
 package org.openhab.binding.octoprint.internal.model;
 
 /**
+ * The {@link ProgressModel} contains all used information about the progress of the currently running job
+ *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 public class ProgressModel {

@@ -61,14 +61,16 @@ public class OctoPrintThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} on channel {}", command.toFullString(), channelUID.getId());
+        //Get printer data
         JobStatusModel jobStatus = datahandler.getJobStatus();
         ItemTemperatureModel temperatureStatus = datahandler.getTemperatureData();
+        //update ThingStatus if no result was returned for one of the requests
         if (jobStatus == null || temperatureStatus == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not reach OctoPrint-Server");
             return;
         }
+        //handle channel and command
         switch (channelUID.getId()) {
             case JOB_COMMANDS_CHANNEL:
                 if (command instanceof RefreshType) {
@@ -122,9 +124,14 @@ public class OctoPrintThingHandler extends BaseThingHandler {
                     updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
                 }
                 break;
-            case TEMPERATURE_TOOL_CHANNEL:
+            case TEMPERATURE_TOOL_ONE_CHANNEL:
                 if (command instanceof RefreshType) {
-                    updateState(TEMPERATURE_TOOL_CHANNEL, new DecimalType(temperatureStatus.tool0.actual));
+                    updateState(TEMPERATURE_TOOL_ONE_CHANNEL, new DecimalType(temperatureStatus.tool0.actual));
+                }
+                break;
+            case TEMPERATURE_TOOL_TWO_CHANNEL:
+                if (command instanceof RefreshType) {
+                    updateState(TEMPERATURE_TOOL_TWO_CHANNEL, new DecimalType(temperatureStatus.tool1.actual));
                 }
                 break;
             case TEMPERATURE_BED_CHANNEL:
@@ -135,20 +142,31 @@ public class OctoPrintThingHandler extends BaseThingHandler {
         }
     }
 
+    /***
+     * The refresh method gets called every {@link OctoPrintConfiguration#refreshrate) seconds.
+     * It polls the OctoPrint server for the current state and updates all channels with the corresponding state.
+     * If the server is not reachable it sets the ThingStatus to offline
+     */
     public void refresh() {
+        //Get data
         JobStatusModel jobStatus = datahandler.getJobStatus();
         ItemTemperatureModel temperatureStatus = datahandler.getTemperatureData();
+
+        //Check if the server was reachable
         if (jobStatus == null || temperatureStatus == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not reach OctoPrint-Server");
             return;
         }
+
+        //Update channel states
         updateState(JOB_COMMANDS_CHANNEL, new StringType(jobStatus.state));
         updateState(JOB_FILENAME_CHANNEL, new StringType(jobStatus.job.file.name));
         updateState(JOB_COMPLETION_CHANNEL, new DecimalType(jobStatus.progress.completion));
         updateState(JOB_RUNTIME_CHANNEL, new DecimalType(jobStatus.progress.printTime));
         updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(jobStatus.progress.printTimeLeft));
-        updateState(TEMPERATURE_TOOL_CHANNEL, new DecimalType(temperatureStatus.tool0.actual));
+        updateState(TEMPERATURE_TOOL_ONE_CHANNEL, new DecimalType(temperatureStatus.tool0.actual));
+        updateState(TEMPERATURE_TOOL_TWO_CHANNEL, new DecimalType(temperatureStatus.tool1.actual));
         updateState(TEMPERATURE_BED_CHANNEL, new DecimalType(temperatureStatus.bed.actual));
     }
 
@@ -158,16 +176,22 @@ public class OctoPrintThingHandler extends BaseThingHandler {
         datahandler = new OctoPrintDatahandler(config);
         updateStatus(ThingStatus.UNKNOWN);
 
+        //Execute connection check on a different thread to leave init method as fast as possible
         scheduler.execute(() -> {
             String url = "http://" + config.hostname + ":" + config.port + "/api/version?apikey=" + config.apikey;
             String result = sendHttpGetRequest(url, 2000);
+
+            //request timeout => not reachable (OFFLINE)
             if (result == null)
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Can not access OctoPrint-Server. This could be caused by a wrong hostname, port, api-key or simply by the OctoPrint-Server being offline");
+            //received expected answer => reachable (ONLINE)
             else if (result.contains("OctoPrint")) {
                 updateStatus(ThingStatus.ONLINE);
-                scheduler.scheduleWithFixedDelay(updateTask, 0, 1, TimeUnit.SECONDS);
-            } else {
+                scheduler.scheduleWithFixedDelay(updateTask, 0, config.refreshrate, TimeUnit.SECONDS);
+            }
+            //received unexpected answer => reachable but not an OctoPrint server (OFFLINE)
+            else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Got an unexpected answer from server. This could be caused by a different service running on the configured host and port.");
             }
@@ -176,6 +200,7 @@ public class OctoPrintThingHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        //Cancel data polling refresh cycle on removal
         updateTask.cancel();
     }
 }

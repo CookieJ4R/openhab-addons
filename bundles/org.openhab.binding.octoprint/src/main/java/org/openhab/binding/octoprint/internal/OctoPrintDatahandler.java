@@ -23,6 +23,8 @@ import org.openhab.binding.octoprint.internal.model.PrinterModel;
 import com.google.gson.Gson;
 
 /**
+ * The {@link OctoPrintDatahandler} handles requests to the OctoPrint server and the json-parsing of the result.
+ *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 public class OctoPrintDatahandler {
@@ -34,6 +36,10 @@ public class OctoPrintDatahandler {
         this.config = config;
     }
 
+    /***
+     * This method queries the OctoPrint server for the current job information and parses the returned JSON to a {@link JobStatusModel}.
+     * @return The JobStatusModel parsed from the request result
+     */
     @Nullable
     public JobStatusModel getJobStatus() {
         String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
@@ -44,6 +50,10 @@ public class OctoPrintDatahandler {
         return job;
     }
 
+    /***
+     * This method queries the OctoPrint server for the current temperature data and parses the returned JSON to a {@link ItemTemperatureModel}
+     * @return The ItemTemperatureModel parsed from the request result
+     */
     @Nullable
     public ItemTemperatureModel getTemperatureData() {
         String url = "http://" + config.hostname + ":" + config.port + "/api/printer?apikey=" + config.apikey;
@@ -54,6 +64,11 @@ public class OctoPrintDatahandler {
         return job;
     }
 
+
+    /***
+     * This method sends a post request to the OctoPrint server to control the printer (start, pause, etc.)
+     * @param content The content the post request should contain in json notation (example: "{\"command\":\"pause\", \"action\":\"resume\"}")
+     */
     public void sendJobRequest(String content) {
         String url = "http://" + config.hostname + ":" + config.port + "/api/job?apikey=" + config.apikey;
         sendHttpPostRequest(url, "application/json", content, 5000);

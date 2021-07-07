@@ -13,6 +13,8 @@
 package org.openhab.binding.octoprint.internal.model;
 
 /**
+ * The {@link FileModel} contains all used information about the file that is being printed by OctoPrint
+ *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 public class FileModel {

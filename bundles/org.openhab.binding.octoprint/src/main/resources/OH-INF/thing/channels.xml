@@ -29,10 +29,15 @@
 		<label>Job Filename</label>
 		<description>Job filename Channel</description>
 	</channel-type>
-	<channel-type id="tool_temperature">
+	<channel-type id="tool_1_temperature">
 		<item-type>Number</item-type>
 		<label>Tool Temperature</label>
-		<description>Tool-Temperature Channel</description>
+		<description>Tool 1 Temperature Channel</description>
+	</channel-type>
+	<channel-type id="tool_2_temperature">
+		<item-type>Number</item-type>
+		<label>Tool Temperature</label>
+		<description>Tool 2 Temperature Channel</description>
 	</channel-type>
 	<channel-type id="bed_temperature">
 		<item-type>Number</item-type>

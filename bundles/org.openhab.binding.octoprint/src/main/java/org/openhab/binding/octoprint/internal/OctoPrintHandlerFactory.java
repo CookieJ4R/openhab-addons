@@ -26,8 +26,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link OctoPrintHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link OctoPrintHandlerFactory} is responsible for creating the {@link OctoPrintThingHandler}.
  *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */

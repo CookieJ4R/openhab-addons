@@ -13,6 +13,8 @@
 package org.openhab.binding.octoprint.internal.model;
 
 /**
+ * The {@link JobStatusModel} contains all general information about the currently running job on the OctoPrint server
+ *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 public class JobStatusModel {

@@ -13,10 +13,13 @@
 package org.openhab.binding.octoprint.internal.model;
 
 /**
+ * The {@link ItemTemperatureModel} contains a {@link TemperatureModel} for each of the tools and the bed of the printer
+ *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 public class ItemTemperatureModel {
 
     public TemperatureModel bed;
     public TemperatureModel tool0;
+    public TemperatureModel tool1;
 }

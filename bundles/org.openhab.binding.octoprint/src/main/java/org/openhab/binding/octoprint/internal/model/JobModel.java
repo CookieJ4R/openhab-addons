@@ -13,6 +13,8 @@
 package org.openhab.binding.octoprint.internal.model;
 
 /**
+ * The {@link JobModel} contains more details about the currently running job
+ *
  * @author Kevin Binder, Dario Pläschke, Florian Silber, Nour El-Dien Kamel - Initial contribution
  */
 public class JobModel {
