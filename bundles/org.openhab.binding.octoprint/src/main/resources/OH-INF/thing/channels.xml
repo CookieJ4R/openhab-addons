@@ -10,7 +10,7 @@
 		<description>Job status and command Channel</description>
 	</channel-type>
 	<channel-type id="job_completion">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Completion</label>
 		<description>Completion Channel</description>
 	</channel-type>

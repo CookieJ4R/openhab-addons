@@ -105,8 +105,7 @@ public class OctoPrintThingHandler extends BaseThingHandler {
                 break;
             case JOB_COMPLETION_CHANNEL:
                 if (command instanceof RefreshType) {
-                    updateState(JOB_COMPLETION_CHANNEL,
-                            new StringType(String.format("%.2f", jobStatus.progress.completion)));
+                    updateState(JOB_COMPLETION_CHANNEL, new DecimalType(jobStatus.progress.completion));
                 }
                 break;
             case JOB_RUNTIME_CHANNEL:
@@ -143,7 +142,7 @@ public class OctoPrintThingHandler extends BaseThingHandler {
     }
 
     /***
-     * The refresh method gets called every {@link OctoPrintConfiguration#refreshrate) seconds.
+     * The refresh method gets called every second.
      * It polls the OctoPrint server for the current state and updates all channels with the corresponding state.
      * If the server is not reachable it sets the ThingStatus to offline
      */
@@ -165,9 +164,12 @@ public class OctoPrintThingHandler extends BaseThingHandler {
         updateState(JOB_COMPLETION_CHANNEL, new DecimalType(jobStatus.progress.completion));
         updateState(JOB_RUNTIME_CHANNEL, new DecimalType(jobStatus.progress.printTime));
         updateState(JOB_RUNTIME_LEFT_CHANNEL, new DecimalType(jobStatus.progress.printTimeLeft));
-        updateState(TEMPERATURE_TOOL_ONE_CHANNEL, new DecimalType(temperatureStatus.tool0.actual));
-        updateState(TEMPERATURE_TOOL_TWO_CHANNEL, new DecimalType(temperatureStatus.tool1.actual));
-        updateState(TEMPERATURE_BED_CHANNEL, new DecimalType(temperatureStatus.bed.actual));
+        if (temperatureStatus.tool0 != null)
+            updateState(TEMPERATURE_TOOL_ONE_CHANNEL, new DecimalType(temperatureStatus.tool0.actual));
+        if (temperatureStatus.tool1 != null)
+            updateState(TEMPERATURE_TOOL_TWO_CHANNEL, new DecimalType(temperatureStatus.tool1.actual));
+        if (temperatureStatus.bed != null)
+            updateState(TEMPERATURE_BED_CHANNEL, new DecimalType(temperatureStatus.bed.actual));
     }
 
     @Override
@@ -188,7 +190,7 @@ public class OctoPrintThingHandler extends BaseThingHandler {
             // received expected answer => reachable (ONLINE)
             else if (result.contains("OctoPrint")) {
                 updateStatus(ThingStatus.ONLINE);
-                scheduler.scheduleWithFixedDelay(updateTask, 0, config.refreshrate, TimeUnit.SECONDS);
+                scheduler.scheduleWithFixedDelay(updateTask, 0, 1, TimeUnit.SECONDS);
             }
             // received unexpected answer => reachable but not an OctoPrint server (OFFLINE)
             else {

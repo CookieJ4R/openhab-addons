@@ -34,12 +34,6 @@
 				<label>API Key</label>
 				<description>API Key for using the REST-Api of the OctoPrint server.</description>
 			</parameter>
-			<parameter required="true" type="text" name="refreshrate">
-				<context>time</context>
-				<label>Refresh Rate</label>
-				<description>The time between the polling for new data from the OctoPrint server in seconds.</description>
-				<default>1</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>
